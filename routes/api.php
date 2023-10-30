@@ -21,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'posts', 'namespace' => 'App\Http\Controllers\Post'], function () {
     Route::post('/', 'StoreController');
+    Route::get('/', 'IndexController');
 });
