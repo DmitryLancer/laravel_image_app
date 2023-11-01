@@ -5,7 +5,7 @@
             Upload
         </div>
         <div class="mb-3">
-            <vue-editor useCustomImageHandler @image-added="handleImageAdded" v-model="content" />
+            <vue-editor useCustomImageHandler @image-removed="handleImageRemoved" @image-added="handleImageAdded" v-model="content" />
         </div>
         <input @click.prevent="update" type="submit" class="btn btn-primary" value="update">
         <div class="mt-5">
@@ -37,6 +37,7 @@ export default {
             post: null,
             content: null,
             imagesIdsForDelete: [],
+            imagesUrlsForDelete: [],
         }
     },
 
@@ -72,6 +73,10 @@ export default {
                 data.append('image_ids_for_delete[]', idForDelete);
             })
 
+            this.imagesUrlsForDelete.forEach( urlForDelete => {
+                data.append('image_urls_for_delete[]', urlForDelete);
+            })
+
 
             data.append('title', this.title);
             data.append('content', this.content);
@@ -80,6 +85,12 @@ export default {
             this.content = '';
             axios.post(`/api/posts/${this.post.id}`, data)
             .then( res => {
+                let previews = this.dropzone.previewsContainer.querySelectorAll('.dz-image-preview')
+
+                previews.forEach( preview => {
+                    preview.remove()
+                })
+
                 this.getPost()
             })
         },
@@ -114,6 +125,10 @@ export default {
                 .catch(err => {
                     console.log(err);
                 });
+        },
+
+        handleImageRemoved(url) {
+            this.imagesUrlsForDelete.push(url)
         }
     }
 }
